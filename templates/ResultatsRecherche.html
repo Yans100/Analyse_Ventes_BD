@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résultats de la Recherche</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+
+/*
+************************************************************************************************************************
+* Contexte de ce code : ResultatsRecherche.html à pour but d'afficher les résultats de la recherche provenant du       *
+* FormulaireRecherche.html. Il affiche les résultats sous forme de carte contenant les informations de chaque jeux,    *
+* mais offre aussi la possibilité de modifier ou supprimer un jeux de la base de données.                              *
+************************************************************************************************************************
+*/
+
+/*
+************************************************************************************************************************
+* Contexte de la partie CSS : Cette première partie s'occupe du côté esthétique de la page web, en format CSS.         *
+* Fond d'écran, couleurs, apparences des cartes et boutons vont être définis ici.                                      *
+************************************************************************************************************************
+*/
+
+        body {
+            background-image: url('https://preview.redd.it/hyped-for-detective-pikachu-today-v0-n6xknez8nksb1.png?width=1080&crop=smart&auto=webp&s=db97139668cbe59ef07d34be489c158124b2c583'); /* Fond écran */
+            background-size: cover; /* Couvre entièrement la page web */
+            background-position: center; /* Centrer le fond d'écran */
+            background-attachment: fixed; /* Fond écran reste fixe */
+        }
+
+        /* Style pour la zone principale de contenu ou sont affiché les cartes des jeux */
+        .container {
+            background-color: rgba(255, 255, 255, 0.8); /* Fond blanc semi-transparent */
+            padding: 30px; /* Espace interne autours du contenue pour ne pas qu'il touche les bordures */
+            border-radius: 10px; /* Coins ronds */
+            margin-top: 100px; /* Espace au dessus du container */
+        }
+
+        /* Styles pour les cartes des jeux */
+        .card {
+            background-color: rgba(255, 255, 255, 0.7); /* Fond blanc semi-transparent */
+            border: none; /* Pas de bordure par défaut */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Ombre autours de chaque cartes */
+        }
+
+        /* Styles pour les cartes des jeux au survol du curseur */
+        .card:hover {
+            background-color: #b7e3b0; /* Vert pâle au survol */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Ombre plus marquée au survol */
+            transform: scale(1.05); /* Agrandissement de 5% de la carte au survol */
+        }
+
+        /* Style pour le titre (nom du jeu) de la carte */
+        .card-header {
+            background-color: #286eda; /* Bleu */
+            color: white; /* Titre en blanc */
+            font-weight: bold; /* Titre en gras */
+            border-top-left-radius: 10px; /* Arrondis les coins supérieurs */
+            border-top-right-radius: 10px; /* Arrondis les coins supérieurs */
+            text-align: center; /* Titre centré */
+        }
+
+        /* Style pour le corps de la carte */
+        .card-body {
+            padding: 15px; /* Espace internet autours de la carte pour ne pas que éléments touche bordure */
+        }
+
+        /* Marges pour informations de chaque jeu */
+        .jeux-info {
+            margin-bottom: 10px; /* Espace entre chaque section */
+        }
+
+        /* Mise en gras pour certaines informations de jeu */
+        .jeux-info strong {
+            color: #286eda; /* Ajoute couleur bleu de texte aussi */
+        }
+
+        /* Style si aucun résultat ne correspond à la recherche */
+        .aucun-resultat {
+            color: #ff0000; /* Rouge */
+            text-align: center; /* Texte centré */
+            font-size: 1.2em; /* Taille texte plus grosse */
+        }
+
+        /* Style des boutons modifier et supprimer */
+        .bouton-action {
+            margin-top: 10px; /* Espacement au dessus des boutons */
+        }
+    </style>
+</head>
+<body>
+
+<!--
+------------------------------------------------------------------------------------------------------------------------
+- Contexte de la partie structure : Cette section implémente la logique d'affichage des cartes de jeux qui corresponde -
+- à la recherche de l'utilisateur. Elle implémente les boutons d'actions ainsi qu'un avertissement avant de supprimer  -
+- un jeu ou pour confirmer la modification d'un jeu. Elle affiche une erreur si aucun jeu est trouvé.                  -
+------------------------------------------------------------------------------------------------------------------------
+ -->
+
+    <div class="container my-5"> <!-- Classe du BootStrap qui centre et aligne le contenu et ajoute marge en haut et en bas (my-5) -->
+        <h1 class="text-center mb-4">Résultats de la Recherche</h1> <!-- Classe du BootStrap centre et ajoute marge inférieure (mb-4) -->
+        {% if jeux %} <!-- Provient de Jinja : Boucle if pour vérifier si jeux contient ou non des éléments -->
+            <div class="row"> <!-- Crée une rangée BootStrap pour aligner les colonnes pour contenir les jeux -->
+                {% for jeu in jeux %} <!-- Boucle for sur chaque élément dans jeux -->
+                    <div class="col-md-6 mb-4"> <!-- Colonne BootStrap (md-6 = chaque colonne occupe 50% de l'espace) avec marge et centrer (mb-4) -->
+                        <div class="card"> <!-- Crée carte BootStrap qui représente le jeu -->
+                            <div class="card-header"> <!-- En-tête de la carte (titre du jeu) -->
+                                {{ jeu.get('Game Title', 'Titre non disponible') }} <!-- Va chercher le nom du jeu, sinon affiche non disponible -->
+                            </div>
+                            <div class="card-body"> <!-- Corps de la carte -->
+                                <!-- Pour chaque attribut, on le met en gras et va chercher sa valeur selon l'attribut nécessaire -->
+                                <p class="jeux-info"><strong>Plateforme:</strong> {{ jeu.get('Platform', 'Non disponible') }}</p>
+                                <p class="jeux-info"><strong>Année:</strong> {{ jeu.get('Year', 'Non disponible') }}</p>
+                                <p class="jeux-info"><strong>Genre:</strong> {{ jeu.get('Genre', 'Non disponible') }}</p>
+                                <p class="jeux-info"><strong>Éditeur:</strong> {{ jeu.get('Publisher', 'Non disponible') }}</p>
+                                <p class="jeux-info"><strong>Note moyenne:</strong> {{ jeu.get('Review', 'Non disponible') }}</p>
+
+                                <!-- Bouton pour modifier un jeu en jaune -->
+                                <a href="/modifier/{{ jeu['_id'] }}" class="btn btn-warning bouton-action">Modifier</a>
+
+                                <!-- Bouton pour supprimer un jeu en rouge avec un pop-up de confirmation si ont clic dessus -->
+                                <button class="btn btn-danger bouton-action" onclick="confirmationSuppression('{{ jeu['_id'] }}')">Supprimer</button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %} <!-- Fin de la boucle for -->
+            </div>
+        {% else %} <!-- Si aucun jeu trouvé -->
+            <p class="aucun-resultat">Aucun jeu ne correspond à votre recherche.</p>
+        {% endif %} <!-- Fin de la boucle if -->
+    </div>
+
+    <script>
+        // Fonction JavaScript pour confirmer la suppression
+        function confirmationSuppression(jeuId) {
+            // Pop-up dans l'écran qui demande de confirmer ou annuler
+            if (confirm("Êtes-vous absolument sûr de vouloir supprimer ce jeu? Cette action est irréversible.")) {
+                // Si confirmé, redirige vers la route de suppression dans app.py avec l'ID du jeu. Sinon, action ignoré
+                window.location.href = "/supprimer/" + jeuId;
+            }
+        }
+    </script>
+</body>
+</html>

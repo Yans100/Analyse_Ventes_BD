@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier Jeu</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+
+/*
+************************************************************************************************************************
+* Contexte de ce code : ModifierJeux.html est la page qui s'affiche lorsque l'utilisateur clic sur le bouton modifier  *
+* dans la carte d'un jeu contenu dans ResultatsRecherche.html suite à une recherche précise. Ce code permet à          *
+* l'utilisateur de modifier n'importe quel attributs de la base de données par rapport au jeu (pas son ID évidemment). *
+************************************************************************************************************************
+*/
+
+/*
+************************************************************************************************************************
+* Contexte de la partie CSS : Cette première partie s'occupe du côté esthétique du formulaire de modification,         *
+* en format CSS. Fond d'écran, couleurs, apparences des choix, espaces réponses et boutons vont être définis ici.      *
+************************************************************************************************************************
+*/
+
+        body {
+            background-image: url('https://preview.redd.it/hyped-for-detective-pikachu-today-v0-n6xknez8nksb1.png?width=1080&crop=smart&auto=webp&s=db97139668cbe59ef07d34be489c158124b2c583'); /* Fond écran */
+            background-size: cover;  /* Pour que l'image couvre toute la zone */
+            background-position: center;  /* Centrer l'image */
+            background-attachment: fixed;  /* L'image reste fixe pendant le défilement */
+        }
+
+        /* Style pour la zone principale du formulaire */
+        .container {
+            background-color: rgba(255, 255, 255, 0.8);  /* Fond blanc semi-transparent */
+            padding: 20px;  /* Espacement interne entre le contenu et les bords */
+            border-radius: 10px; /* Coins ronds */
+            margin-top: 30px;  /* Espace au dessus du container */
+        }
+
+        /* Style des étiquettes du formulaire */
+        .form-group label {
+            font-weight: bold; /* Titre des étiquettes en gras */
+        }
+
+        /* Style des champs du formulaire */
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.8); /* Fond blanc semi-transparent */
+            border: 1px solid #bcbcbc; /* Bordure grise pâle autours de l'espace réponse */
+            color: #000000; /* Couleur du texte */
+        }
+
+        /* Style pour le bouton sauvegarder les modifications */
+        .bouton-confirmer-primary {
+            background-color: #8bcf91; /* Vert pâle */
+            margin-top: 20px; /* Marge au dessus du bouton */
+        }
+
+        /* Style pour le bouton sauvegarder les modifications au survol du curseur */
+        .bouton-confirmer-primary:hover {
+            background-color: #6fa76a; /* Vert */
+            border-color: #01930d; /* Bordure vert foncé */
+        }
+
+        /* Style des sections genre et plateforme */
+        .form-group {
+            margin-bottom: 15px; /* Marge en dessous */
+        }
+
+        /* Style des listes de choix déroulantes des sections genre et plateforme */
+        .form-group select {
+            margin-left: 10px; /* Espacement à gauche pour les aligner avec leur étiquette */
+        }
+
+    </style>
+</head>
+<body>
+
+<!--
+------------------------------------------------------------------------------------------------------------------------
+- Contexte de la partie structure : Cette section implémente la page web qui permet de modifier les informations       -
+- concernant un jeu spécifique suite à une recherche. Un formulaire est présenté à l'utilisateur permettant de         -
+- modifier n'importe quels des champs de facon permanente dans la base de données.                                     -
+------------------------------------------------------------------------------------------------------------------------
+ -->
+
+    <div class="container my-5"> <!-- Crée conteneur pour le contenu du formulaire. Classe BootStrap qui centre, aligne et met marge (my-5) -->
+        <h1 class="text-center mb-4">Modifier le jeu</h1> <!-- Centre le texte et met marge inférieure (mb-4) -->
+
+        <form method="POST" onsubmit="confirmationMAJ(event)"> <!-- Formulaire dans la zone de contenu avec données envoyées (POST) et confirmation JS-->
+            <div class="form-group"> <!-- Groupe étiquette et champs du formulaire pour cohérence au niveau du style -->
+                <label for="title">Titre du jeu</label> <!-- Crée étiquette pour le champ. Titre du jeu est lié à title -->
+                <!-- Réponse attendue sous forme de texte, style BootStrap form-control, value = insère la valeur actuelle du titre du jeu récupérer de la base de données -->
+                <input type="text" class="form-control" id="title" name="title" value="{{ jeu['Game Title'] }}">
+            </div>
+
+            <!-- Exactement le même principe pour les autres attributs -->
+            <div class="form-group">
+                <label for="year">Année de sortie</label>
+                <input type="number" class="form-control" id="year" name="year" value="{{ jeu['Year'] }}">
+            </div>
+            <div class="form-group">
+                <label for="publisher">Éditeur</label>
+                <input type="text" class="form-control" id="publisher" name="publisher" value="{{ jeu['Publisher'] }}">
+            </div>
+            <div class="form-group">
+                <label for="review">Note</label>
+                <input type="number" class="form-control" id="review" name="review" step="0.1" value="{{ jeu['Review'] }}">
+            </div>
+
+            <!-- Section ventes. Même principe. -->
+            <div class="sales-section">
+                <div class="form-group">
+                    <label for="north_america">Ventes en Amérique du Nord (en millions)</label>
+                    <input type="number" class="form-control" id="north_america" name="north_america" step="0.01" value="{{ jeu['North America'] }}">
+                </div>
+                <div class="form-group">
+                    <label for="europe">Ventes en Europe (en millions)</label>
+                    <input type="number" class="form-control" id="europe" name="europe" step="0.01" value="{{ jeu['Europe'] }}">
+                </div>
+                <div class="form-group">
+                    <label for="japan">Ventes au Japon (en millions)</label>
+                    <input type="number" class="form-control" id="japan" name="japan" step="0.01" value="{{ jeu['Japan'] }}">
+                </div>
+                <div class="form-group">
+                    <label for="rest_of_world">Ventes dans le reste du monde (en millions)</label>
+                    <input type="number" class="form-control" id="rest_of_world" name="rest_of_world" step="0.01" value="{{ jeu['Rest of World'] }}">
+                </div>
+                <div class="form-group">
+                    <label for="global">Ventes mondiales (en millions)</label>
+                    <input type="number" class="form-control" id="global" name="global" step="0.01" value="{{ jeu['Global'] }}">
+                </div>
+            </div>
+
+            <!-- Section genre. Cette section est différente car ce n'est pas une réponse texte qui est attendue mais une selection dans un menu déroulant -->
+            <div class="genre-section"> <!-- Division créer pour regrouper le champs genre -->
+                <div> <!-- Une autre division pour la structure et organisation du contenu -->
+                    <label for="genre"><strong>Genre</strong></label> <!-- Étiquette Genre en gras qui référence genre -->
+                    <select class="form-control" id="genre" name="genre"> <!-- Select pour menu déroulant avec style BootStrap et lié à genre -->
+                        <!-- Chacune des options sont listées. Jinja : selected est ajouté si le genre actuel correspond a l'option value selectionnée, sinon chaine vide ajoutée -->
+                        <option value="Action" {{ 'selected' if jeu['Genre'] == 'Action' else '' }}>Action</option>
+                        <option value="Adventure" {{ 'selected' if jeu['Genre'] == 'Adventure' else '' }}>Aventure</option>
+                        <option value="Role-Playing" {{ 'selected' if jeu['Genre'] == 'Role-Playing' else '' }}>RPG</option>
+                        <option value="Sports" {{ 'selected' if jeu['Genre'] == 'Sports' else '' }}>Sports</option>
+                        <option value="Shooter" {{ 'selected' if jeu['Genre'] == 'Shooter' else '' }}>FPS</option>
+                        <option value="Puzzle" {{ 'selected' if jeu['Genre'] == 'Puzzle' else '' }}>Casse-Tête</option>
+                        <option value="Racing" {{ 'selected' if jeu['Genre'] == 'Racing' else '' }}>Course automobile</option>
+                        <option value="Platform" {{ 'selected' if jeu['Genre'] == 'Platform' else '' }}>Plateforme</option>
+                        <option value="Simulation" {{ 'selected' if jeu['Genre'] == 'Simulation' else '' }}>Simulation</option>
+                        <option value="Fighting" {{ 'selected' if jeu['Genre'] == 'Fighting' else '' }}>Combat</option>
+                        <option value="Misc" {{ 'selected' if jeu['Genre'] == 'Misc' else '' }}>Autres</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Section plateforme. Exactement le même principe que la section genre.  -->
+            <div class="plateforme-section">
+                <div>
+                    <label for="platform"><strong>Plateforme</strong></label>
+                    <select class="form-control" id="platform" name="platform">
+                        <option value="PC" {{ 'selected' if jeu['Platform'] == 'PC' else '' }}>PC</option>
+                        <option value="PS" {{ 'selected' if jeu['Platform'] == 'PS' else '' }}>PlayStation</option>
+                        <option value="PS2" {{ 'selected' if jeu['Platform'] == 'PS2' else '' }}>PlayStation 2</option>
+                        <option value="PS3" {{ 'selected' if jeu['Platform'] == 'PS3' else '' }}>PlayStation 3</option>
+                        <option value="XB" {{ 'selected' if jeu['Platform'] == 'XB' else '' }}>Xbox</option>
+                        <option value="X360" {{ 'selected' if jeu['Platform'] == 'X360' else '' }}>Xbox 360</option>
+                        <option value="GB" {{ 'selected' if jeu['Platform'] == 'GB' else '' }}>GameBoy</option>
+                        <option value="GBA" {{ 'selected' if jeu['Platform'] == 'GBA' else '' }}>GameBoy Advance Color</option>
+                        <option value="PSP" {{ 'selected' if jeu['Platform'] == 'PSP' else '' }}>PlayStation Portable</option>
+                        <option value="DS" {{ 'selected' if jeu['Platform'] == 'DS' else '' }}>Nintendo DS</option>
+                        <option value="3DS" {{ 'selected' if jeu['Platform'] == '3DS' else '' }}>Nintendo 3DS</option>
+                        <option value="NES" {{ 'selected' if jeu['Platform'] == 'NES' else '' }}>Nintendo Entertainment System</option>
+                        <option value="SNES" {{ 'selected' if jeu['Platform'] == 'SNES' else '' }}>Super Nintendo Entertainment System</option>
+                        <option value="N64" {{ 'selected' if jeu['Platform'] == 'N64' else '' }}>Nintendo 64</option>
+                        <option value="GC" {{ 'selected' if jeu['Platform'] == 'GC' else '' }}>GameCube</option>
+                        <option value="Wii" {{ 'selected' if jeu['Platform'] == 'Wii' else '' }}>Wii</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Bouton sauvegarder les modifications en bleu -->
+            <button type="submit" class="btn bouton-confirmer-primary bouton-action">Sauvegarder les modifications</button>
+        </form>
+        <script>
+            // Affiche un pop-up de confirmation lorsqu'on clic sur le bouton sauvegarder les modifications
+            function confirmationMAJ(event) {
+                event.preventDefault(); // Empêche la soumission immédiate du formulaire de mise à jour
+                alert("La mise à jour a été effectuée avec succès !"); // Pop-up alerte de confirmation
+                event.target.submit(); // Soumet le formulaire après l'affichage de l'alerte
+            }
+        </script>
+    </div>
+</body>
+</html>

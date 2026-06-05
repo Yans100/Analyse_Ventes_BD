@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse du DataFrame</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+
+/*
+************************************************************************************************************************
+* Contexte de ce code : AnalyseDF.html à pour objectif de construire la page web associé aux analyses produites dans   *
+* la route analyse de app.py. La page web affiche les résultats des algorithmes d'apprentissage sur les données.       *
+************************************************************************************************************************
+*/
+
+/*
+************************************************************************************************************************
+* Contexte de la partie CSS : Cette première partie s'occupe du côté esthétique de la page web, en format CSS.         *
+* Fond d'écran, couleurs, apparences des boutons, les conteneurs, etc. sont définis dans cette première parte.         *                                                                                                 *
+************************************************************************************************************************
+*/
+        body {
+            background-image: url('https://wallpapercave.com/wp/wp9236517.jpg'); /* Fond écran */
+            background-size: cover; /* Toute la surface */
+            background-position: center; /* Centrer image */
+            background-attachment: fixed; /* Fond écran reste fixe */
+            height: 100vh; /* S'adapte au navigateur/différente écrans */
+            display: flex; /* Flexbox pour alignement */
+            flex-direction: column; /* Vertical (colonnes) des éléments */
+            justify-content: flex-start; /*`Éléments à partir du haut */
+            align-items: center; /* Centrage horizontal des éléments*/
+        }
+
+        /* Création du contenant pour le menu principal */
+        .container {
+            background-color: rgba(255, 255, 255, 0.8); /* Fond blanc semi-transparent */
+            padding: 30px; /* Espacement interne des options */
+            border-radius: 10px; /* Coin ronds */
+            width: 90%;  /* Largeur du container */
+            max-width: 7500px; /* Largeur maximale */
+            margin-top: 20px;  /* Espacement vers le bas à partir du top de la page */
+        }
+
+        /* Créer les boutons du menu */
+        .bouton-container {
+            display: flex; /* Flexbox pour alignement */
+            justify-content: space-between; /* Aligne boutons horizontalement avec espace égale */
+            width: 100%; /* Occupation du container par les boutons */
+            margin-top: 20px; /* Ajoute espace au dessus du container */
+        }
+
+        /* Style des boutons du menu */
+        .bouton-custom {
+            background-color: #ffffff;  /* Couleur de fond des boutons devient blanc */
+            color: black;  /* Texte noir dans boutons */
+            border-radius: 5px; /* Coin arrondis */
+            border: none; /* Supprime les rebords */
+            font-size: 16px; /* Taille police */
+            width: 16%;  /* Largeur des boutons pour qu'ils soient côte-à-côte et uniforme */
+            padding: 10px; /* Espacement interne des boutons */
+        }
+
+        .bouton-custom:hover {
+            background-color: #d4edda;  /* Vert pâle quand on survole option du menu avec curseur de souris */
+        }
+
+        .bouton-custom:active {
+            background-color: #008000FF;  /* Bouton à une couleur vert foncé lors du clic */
+        }
+
+        .analyses-container {
+            width: 120%; /* Ajuste le container par rapport à la taille des images graphs */
+            max-width: 1200px; /* Largeur maximale des graphiques */
+            margin: 20px auto; /* Centrer les graphiques */
+        }
+
+        .analyses-container img {
+            max-width: 120%; /* Image grossis de leur taille d'origine pour mieux voir */
+            display: block; /* Centrer l'image */
+            height: auto; /* Respecter automatiquement les proportions */
+            margin-left: auto; /* Respecter automatiquement les proportions */
+            margin-right: auto; /* Respecter automatiquement les proportions */
+        }
+
+        .cacher {
+            display: none; /* Cache les graphiques si aucune option sélectionner dans menu */
+        }
+
+    </style>
+</head>
+<body>
+
+<!--
+------------------------------------------------------------------------------------------------------------------------
+- Contexte de la partie structure : Cette deuxième partie s'occupe dans un premier temps de relier un utilisateur      -
+- qui clic sur l'option 4 du menu principal à ici. C'est ce qui correspond à son choix. Ensuite, un second menu        -
+- lui permet de choisir l'algorithme d'apprentissage de son choix. Les résultats sont affichés.                        -
+------------------------------------------------------------------------------------------------------------------------
+ -->
+
+    <div class="container text-center">
+        <h1 class="mb-4">Consulter l'analyse des données</h1> <!-- Se réfère a option 4 de MenuPrincipal.html -->
+
+        <!-- Sélectionner les résultats d'exécution de l'algorithme à afficher avec afficheAnalyse (JavaScript) selon le titre de bouton que l'utilisateur clic -->
+        <div class="bouton-container">
+            <button class="bouton-custom" onclick="afficheAnalyse('analyse-initiale')">Analyse initiale</button>
+            <button class="bouton-custom" onclick="afficheAnalyse('analyse-remplie')">Analyse après gestion des valeurs nulles</button>
+            <button class="bouton-custom" onclick="afficheAnalyse('analyse-regression')">Régression linéaire</button>
+            <button class="bouton-custom" onclick="afficheAnalyse('analyse-knn')">Algorithme KNN</button>
+            <button class="bouton-custom" onclick="afficheAnalyse('analyse-random-forest')">Algorithme forêt aléatoire</button>
+            <button class="bouton-custom" onclick="afficheAnalyse('analyse-comparaison')">Comparaison des 3 algorithmes d'apprentissage</button>
+        </div>
+
+        <!-- Conteneurs pour chaque analyse. id = identifie l'analyse, cacher = cache par défaut les analyses. pre =
+         afficher le texte brute, src = intégration de l'image du résultat de l'exécution de l'algorithme qui est généré dans app.py dans la route analyse -->
+        <div id="analyse-initiale" class="analyses-container cacher">
+            <h2>Analyse initiale</h2>
+            <pre>{{ analyse_initiale }}</pre>
+        </div>
+        <div id="analyse-remplie" class="analyses-container cacher">
+            <h2>Analyse après gestion des valeurs nulles</h2>
+            <pre>{{ analyse_finale }}</pre>
+        </div>
+        <div id="analyse-regression" class="analyses-container cacher">
+            <h2>Régression Linéaire</h2>
+            <h5>Prédiction basée sur la note réelle des jeux et la prédiction des notes selon leur rang avec une régression linéaire</h5>
+            <pre style="font-size: 20px; font-weight: bold;">{{ resultats_regression }}</pre>
+            <img src="data:image/png;base64,{{ img_base64_regression }}" alt="Graphique de Régression Linéaire">
+        </div>
+        <div id="analyse-knn" class="analyses-container cacher">
+            <h2>Algorithme KNN</h2>
+            <h5>Prédiction basée sur la note réelle des jeux et la prédiction des notes selon leur rang avec l'algorithme KNN (k=3)</h5>
+            <pre style="font-size: 20px; font-weight: bold;">{{ resultats_knn }}</pre>
+            <img src="data:image/png;base64,{{ img_base64_knn }}" alt="Graphique KNN">
+        </div>
+        <div id="analyse-random-forest" class="analyses-container cacher">
+            <h2>Algorithme Random Forest</h2>
+            <h5>Prédiction basée sur la note réelle des jeux et la prédiction des notes selon leur rang avec l'algorithme Random Forest</h5>
+            <pre style="font-size: 20px; font-weight: bold;">{{ resultats_rf }}</pre>
+            <img src="data:image/png;base64,{{ img_base64_rf }}" alt="Graphique Random Forest">
+        </div>
+        <div id="analyse-comparaison" class="analyses-container cacher">
+            <h2>Comparaison des Modèles</h2>
+            <h5>Comparaison visuelle des prédictions avec la régression linéaire, KNN et Random Forest</h5>
+            <img src="data:image/png;base64,{{ img_base64_comparaison }}" alt="Comparaison des modèles">
+        </div>
+    </div>
+
+    <script>
+        // Fonction JavaScript pour afficher ou masquer les analyses
+        function afficheAnalyse(type) {
+            // Masquer toutes les analyses par défaut (cacher).
+            const sections = document.querySelectorAll('.analyses-container');
+            sections.forEach(section => section.classList.add('cacher'));
+
+            // Affiche uniquement l'analyse sélectionnée (le retire de la liste cachée)
+            const selectedSection = document.getElementById(type);
+            selectedSection.classList.remove('cacher');
+        }
+    </script>
+</body>
+</html>

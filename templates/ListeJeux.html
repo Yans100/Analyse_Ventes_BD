@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Jeux Vidéo</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+
+/***********************************************************************************************************************
+* Contexte de ce code: ListeJeux.html à pour but d'afficher tout les jeux et les attributs dans la base de données sur *
+* Atlas. Il y a également une simple barre de recherche pour rechercher un jeu rapidement par son titre et consulter   *
+* ses attributs.                                                                                                       *
+************************************************************************************************************************
+*/
+
+/*
+************************************************************************************************************************
+* Contexte de la partie CSS : Cette première partie s'occupe du côté esthétique de la page web, en format CSS.         *
+* Principalement l'apparence des cartes de jeux et effets spéciaux de ceux-ci sont définis dans cette première parte.  *                                                                                                 *
+************************************************************************************************************************
+*/
+
+        body {
+            background-image: url('https://c4.wallpaperflare.com/wallpaper/883/298/549/club-nintendo-super-mario-nintendo-nintendo-entertainment-system-wallpaper-preview.jpg'); /* Fond écran */
+            background-size: cover; /* Couvre toute la page */
+            background-position: center; /* Centre l'image */
+            background-attachment: fixed; /* Image fixe lorsque la page défile */
+        }
+
+        /* Style pour la zone principale de contenu (gros container du fond derrière les cartes) */
+        .container {
+            background-color: rgba(255, 255, 255, 0.8); /* Fond blanc semi-transparent */
+            padding: 30px; /* Espace intérieur */
+            border-radius: 10px; /* Coin ronds */
+            margin-top: 110px; /* Espace le container du haut de la page */
+        }
+
+        /* Styles pour les 1907 cartes des jeux */
+        .card {
+            background-color: rgba(255, 255, 255, 0.7); /* Fond blanc semi-transparent pour chaque carte */
+            border: none; /* Supprimer les bordures */
+            transition: background-color 0.3s ease; /* Transition fluide pour changement couleur (hover) */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Ombre légère autours de chaque carte */
+        }
+
+        /* Effets spéciaux des cartes lors du survol du curseur */
+        .card:hover {
+            background-color: #b7e3b0; /* Fond écran vert pâle */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8); /* Ombrage plus marquée au survol */
+            transform: scale(1.05); /* Agrandissement de la carte au survol */
+        }
+
+        /* Style pour la barre de recherche */
+        .barre-recherche {
+            position: absolute; /* Isole la barre du flux normal */
+            top: 1px; /* La place juste en dessous du bord supérieur de la fenêtre */
+            left: 50%; /* Centre la barre horizontalement */
+            transform: translateX(-50%); /* Centre la barre horizontalement */
+            background-color: rgba(255, 255, 255, 0.7); /* Fond semi-blanc transparent */
+            padding: 5px; /* Espace intérieur */
+            border-radius: 5px; /* Coin ronds */
+            width: 120%; /* Ajuste la largeur de la barre */
+            max-width: 500px; /* Ajuste la largeur de la barre */
+        }
+    </style>
+</head>
+<body>
+
+<!--
+------------------------------------------------------------------------------------------------------------------------
+- Contexte de la partie structure : Dans un premier temps, la logique pour implémenter la barre de recherche est       -
+- implémenté. Ensuite, la logique pour créer et organiser les cartes des jeux est aussi implémenté.                    -
+------------------------------------------------------------------------------------------------------------------------
+ -->
+
+    <div class="barre-recherche"> <!-- Contient barre de recherche -->
+        <form method="GET" action="/jeux"> <!-- Envoie une requête get à la route /jeux avec la recherche saisie -->
+            <div class="input-group"> <!-- Champs de saisie pour rechercher -->
+                <input type="text" name="query" class="form-control" placeholder="Rechercher un jeu...">
+                <div class="input-group-append">
+                    <button type="submit" class="bouton-rechercher btn-primary">Rechercher</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="container my-5"> <!-- Container principal BootStrap qui contient la liste de jeux -->
+        <h1 class="text-center mb-4">Liste des Jeux Vidéo</h1> <!-- Classe BootStrap pour centrer et ajouter marge inférieure (mb-4) -->
+
+        <div class="row"> <!-- Container pour organiser les cartes des jeux en lignes et colonnes -->
+            {% for jeu in jeux %} <!-- Boucle côté serveur pour afficher chaque jeu de la liste jeux -->
+            <div class="col-md-6 mb-4"> <!-- Colonne BootStrap (md-6 = chaque colonne occupe 50% de l'espace) avec marge et centrer (mb-4)-->
+                <div class="card shadow"> <!-- Cartes avec ombres pour le style -->
+                    <div class="card-header bg-primary text-white"> <!-- En-tête des cartes en bleu avec texte blanc -->
+                        <h5 class="card-title mb-0">{{ jeu['Game Title'] }}</h5> <!-- Affiche titre du jeu dans l'entête (mb-0)-->
+                    </div>
+                    <div class="card-body"> <!-- Corps de la carte -->
+                        <div class="row mb-3"> <!-- Division du corps de la carte en 2 colonnes (mb-3) -->
+                            <div class="col-md-6 informations"> <!-- Première colonne du corps qui inclut le rang, plateforme, année de sortie, genre, éditeur-->
+                                <p><strong>Rang:</strong> #{{ jeu['Rank'] }}</p>
+                                <p><strong>Plateforme:</strong> {{ jeu['Platform'] }}</p>
+                                <p><strong>Année:</strong> {{ jeu['Year'] }}</p>
+                                <p><strong>Genre:</strong> {{ jeu['Genre'] }}</p>
+                                <p><strong>Éditeur:</strong> {{ jeu['Publisher'] }}</p>
+                            </div>
+                            <div class="col-md-6 ventes"> <!-- Deuxième colonne du corps qui inclut ventes dans toutes les régions et globale-->
+                                <h6 class="text-center">Ventes (millions)</h6>
+                                <p><strong>Amérique du Nord:</strong> {{ jeu['North America'] }}</p>
+                                <p><strong>Europe:</strong> {{ jeu['Europe'] }}</p>
+                                <p><strong>Japon:</strong> {{ jeu['Japan'] }}</p>
+                                <p><strong>Reste du monde:</strong> {{ jeu['Rest of World'] }}</p>
+                                <p class="text-primary"><strong>Globalement:</strong> {{ jeu['Global'] }}</p>
+                            </div>
+                        </div>
+                        <div class="text-center review-score"> <!-- Affiche note moyenne des critiques centrés dans le bas de la carte -->
+                            <p><strong>Note moyenne:</strong> {{ "%.1f"|format(jeu['Review']) }}/100</p> <!-- Formater à une décimale -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %} <!-- Fin de la boucle -->
+        </div>
+    </div>
+</body>
+</html>

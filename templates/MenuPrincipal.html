@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenue!</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+
+/*
+************************************************************************************************************************
+* Contexte de ce code: MenuPrincipal.html à pour but de fournir un menu d'accueil lorsque l'utilisateur arrive sur le  *
+* site web. Toute les options disponibles y sont proposé et l'utilisateur clique sur l'option qu'il souhaite et        *
+* il va être redirigé en conséquence.                                                                                  *                                                                                                 *
+************************************************************************************************************************
+*/
+
+/*
+************************************************************************************************************************
+* Contexte de la partie CSS : Cette première partie s'occupe du côté esthétique de la page web, en format CSS.         *
+* Fond d'écran, couleurs, apparences du menu, les conteneurs, etc. sont définis dans cette première parte.             *                                                                                                 *
+************************************************************************************************************************
+*/
+
+        body {
+            background-image: url('https://c4.wallpaperflare.com/wallpaper/883/298/549/club-nintendo-super-mario-nintendo-nintendo-entertainment-system-wallpaper-preview.jpg'); /* Fond écran */
+            background-size: cover;  /* Pour que fond écran couvre toute la zone */
+            background-position: center;  /* Centrer l'image */
+            background-attachment: fixed;  /* Fond écran reste fixe pendant le défilement */
+        }
+
+        /* Style pour le menu à l'accueil */
+        .container {
+            background-color: rgba(255, 255, 255, 0.8);  /* Fond blanc semi-transparent */
+            padding: 30px; /* Espace entre contenue du container et bords */
+            border-radius: 10px; /* Coin ronds */
+        }
+        /* Style les éléments dans le menu comme une liste */
+        .list-group-item {
+            background-color: rgba(255, 255, 255, 0.7);  /* Fond blanc semi-transparent pour chaque option du menu */
+            border: none; /* Pas de bordure pour les éléments du menu */
+        }
+
+        /* Effet sur le survol avec curseur */
+        .list-group-item:hover {
+            background-color: #9ed5aa;  /* Vert pâle */
+        }
+
+        /* Effet sur le clic d'une option du menu */
+        .list-group-item:active {
+            background-color: #01930d;  /* Vert plus foncé */
+        }
+
+    </style>
+</head>
+<body>
+
+<!--
+------------------------------------------------------------------------------------------------------------------------
+- Contexte de la partie structure : Cette deuxième partie s'occupe d'orienter chaque option vers la bonne route qui    -
+- est définis dans app.py.                                                                                             -
+------------------------------------------------------------------------------------------------------------------------
+ -->
+
+    <div class="container menu-p text-center">
+        <h1 class="mb-4">Bienvenue !</h1> <!-- Classe qui ajoute une marge pour espacer titre des éléments du menu (mb-4)-->
+        <div class="list-group">  <!-- Crée une liste d'éléments pour le menu, on ajoute toutes les options voulues ici -->
+
+            <!-- a href = Crée lien cliquable pour chaque option qui redirige vers la bonne route dans app.py. List-group-item =
+             Éléments comme une liste. List-group-item-action = effet interactif au clic -->
+            <a href="/jeux" class="list-group-item list-group-item-action">1. Consulter la liste complète de jeux</a>
+            <a href="/recherche" class="list-group-item list-group-item-action">2. Outils de recherche, modification et suppression</a>
+            <a href="/visualisations" class="list-group-item list-group-item-action">3. Visualiser des statistiques sur les données</a>
+            <a href="/analyse" class="list-group-item list-group-item-action">4. Consulter l'analyse des données</a>
+            <a href="/recherche-rang" class="list-group-item list-group-item-action">5. Rechercher par rang et visualiser les prédictions des notes moyennes</a>
+        </div>
+    </div>
+</body>
+</html>

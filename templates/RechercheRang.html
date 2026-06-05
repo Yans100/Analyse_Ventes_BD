@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recherche par Rang</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+
+/*
+************************************************************************************************************************
+* Contexte de ce code : RechercheRang.html à pour objectif de construire une page web qui permet la recherche d'un     *
+* rang spécifique dans la base de données. La note réelle est ensuite afficher, avec les prédictions des algorithmes   *
+* d'apprentissage de régression linéaire, KNN et forêt aléatoire. Elle sont classées selon leur précision dans ce      *
+* contexte. Un graphique pour représenter les prédictions est également afficher. Elle travaille en collaboration      *
+* avec la route recherche-rang dans app.py.                                                                            *
+************************************************************************************************************************
+*/
+
+/*
+************************************************************************************************************************
+* Contexte de la partie CSS : Cette première partie s'occupe du côté esthétique de la page web, en format CSS.         *
+* Fond d'écran, couleurs, apparences de la table, des résultats etc. sont définis dans cette première parte.           *                                                                                                 *
+************************************************************************************************************************
+*/
+
+        body {
+            background-image: url('https://images.rawpixel.com/image_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvcm0zODItZDEtMDZhLXM4OS1rbnBlcGtuYi5qcGc.jpg'); /* Fond d'écran */
+            background-size: cover; /* Toute la surface */
+            background-position: center; /* Centrer image */
+            background-attachment: fixed; /* Fond écran reste fixe */
+            display: flex; /* Flexbox pour alignement */
+            flex-direction: column; /* Vertical (colonnes) des éléments */
+            height: 100vh; /* S'adapte au navigateur/différente écrans */
+        }
+
+        /* Style du conteneur principale */
+        .container-p {
+            display: flex; /* Éléments à l'horizontale */
+            flex: 1; /* Occupe l'espace disponible */
+            justify-content: center; /* Éléments aligné au centre */
+            align-items: flex-start; /* Éléments aligné verticalement au début de la page */
+            padding: 20px; /* Espace autours du conteneur */
+        }
+
+        /* Style du conteneur barre recherche */
+        .barre-recherche-container {
+            background-color: rgba(255, 255, 255, 0.8); /* Fond blanc semi-transparent */
+            padding: 30px; /* Espacement interne des options */
+            border-radius: 10px; /* Coin ronds */
+        }
+
+        /* Disposition interne du conteneur barre recherche */
+        .barre-recherche-container form {
+            display: flex; /* Modèle flex pour organiser les champs */
+            flex-direction: column; /* Champs verticale */
+            gap: 15px; /* Espace entre les champs */
+        }
+
+        /* Style de l'étiquette du conteneur barre recherche */
+        .barre-recherche-container label {
+            font-size: 16px; /* Taille police */
+            font-weight: bold; /* En gras */
+        }
+
+        /* Espace pour écrire réponse de type nombre sous barre de recherche et bouton rechercher */
+        .barre-recherche-container input[type="number"], .barre-recherche-container button {
+            padding: 10px; /* Espace intérieur */
+            font-size: 16px; /* Taille police */
+        }
+
+        /* Style pour le bouton rechercher */
+        .barre-recherche-container button {
+            background-color: #007BFF; /* Bleu*/
+            color: white; /* Couleur texte dans bouton */
+            border: none; /* Supprimer les bordures */
+        }
+
+        /* Style du bouton au survol de la souris */
+        .barre-recherche-container button:hover {
+            background-color: #9ed5aa; /* Devient vert pâle */
+        }
+
+        /* Style du bouton au clic de la souris */
+        .barre-recherche-container button:active{
+            background-color: #01930d; /* Devient vert */
+        }
+
+        /* Style des résultats de la recherche par rang */
+        .resultats {
+            margin-left: 20px; /* Marge gauche pour séparer du formulaire de recherche */
+            flex-grow: 1; /* S'étends dans l'espace restant */
+        }
+
+        /* Style pour titre h1 et paragraphe */
+        h1, p {
+            font-size: 18px; /* Grossir taille police pour plus de lisibilité */
+        }
+
+        /* Style pour la table résumant les résultats */
+        table {
+            margin-top: 20px; /* Ajoute un espace en haut */
+            border-collapse: collapse; /* Supprime espace entre les bordures des cellules */
+            width: 100%; /* Occupe toute la largeur disponible */
+        }
+
+        /* Style pour les cellules de la table */
+        th, td {
+            border: 2px solid #ddd; /* Petite bordure grise subtile */
+            padding: 12px; /* Espace intérieur */
+            font-size: 16px; /* Taille de police */
+            text-align: center; /* Texte centré */
+            background-color: #fff; /* Fond blanc */
+        }
+
+        /* Style pour les en-têtes des colonnes */
+        th {
+            background-color: #f2f2f2; /* Gris clair comme fond */
+        }
+
+        /* Style du conteneur pour le graphique des résultats qui compare les 3 algorithmes */
+        .graph-container {
+            width: 120%; /* Ajuste le container par rapport à la taille des images graphs */
+            max-width: 1200px; /* Largeur maximale des graphiques */
+            margin: 20px auto; /* Centrer les graphiques */
+            text-align: center; /* Texte centré */
+        }
+
+        /* Style de l'image représentant le graphique */
+        .graph-container img {
+            max-width: 120%; /* Image grossis de leur taille d'origine pour mieux voir */
+            display: block; /* Centrer l'image */
+            height: auto; /* Respecter automatiquement les proportions */
+            margin-left: auto; /* Respecter automatiquement les proportions */
+            margin-right: auto; /* Respecter automatiquement les proportions */
+        }
+    </style>
+</head>
+<body>
+
+<!--
+------------------------------------------------------------------------------------------------------------------------
+- Contexte de la partie structure : Cette deuxième partie gère la logique pour afficher les résultats selon la         -
+- recherche. Elle s'assure qu'ils sont bien affichés ainsi que le graphique correspondant. On peut y voir la           -
+- classification selon la précision de l'algorithme utilisé.                                                           -
+------------------------------------------------------------------------------------------------------------------------
+ -->
+
+    <div class="container-p"> <!-- Crée le conteneur principal -->
+        <div class="barre-recherche-container col-md-3"> <!-- Classe BootStrap pour la barre de recherche qui prend 3 colonnes sur 12 d'espace (col-md-3)-->
+            <h2>Rechercher un jeu par rang</h2> <!-- Titre du conteneur principal -->
+            <form method="get" action="/recherche-rang"> <!-- Formulaire qui permet à l'utilisateur de saisir le rang et l'envoyer à la route dans app.py pour manipulation -->
+                <label for="rank">Rang :</label> <!-- Rang est lié à Rank -->
+                <input type="number" id="rank" name="rank" min="1" required> <!-- au moins 1 chiffre obligatoire -->
+                <button type="submit">Rechercher</button> <!-- Bouton Rechercher qui lance la recherche -->
+            </form>
+        </div>
+
+        <div class="resultats col-md-9"> <!-- Classe du BootStrap qui utilise un conteneur prenant le 9 sur 12 colonnes restant (col-md-9) -->
+            {% if resultat is not none %} <!-- Jinja : Boucle qui vérifie si variable resultat contient une valeur -->
+                <p class="text-center" style="font-size: 2rem; font-weight: bold;">Résultat de la Recherche</p> <!-- Titre de la section résultats -->
+                <p><strong>Rang :</strong> {{ resultat.rang }}</p> <!-- Insère valeur dynamique (rang) provenant de la variable resultat -->
+                <p><strong>Nom du Jeu :</strong> {{ resultat.nom_jeu or "Non disponible" }}</p> <!-- Insère valeur dynamique (nom du jeu) provenant de la variable resultat -->
+
+                {% if resultat.note_reelle is not none %} <!-- Jinja : Boucle qui vérifie si variable resultat contient une valeur de note réelle -->
+                    <p><strong>Note réelle :</strong> {{ resultat.note_reelle }} <!-- L'affiche si disponible -->
+                {% else %}
+                    <p><strong>Note réelle :</strong> <em>Non disponible</em></p> <!-- Message d'erreur si non disponible -->
+                {% endif %} <!-- Fin boucle qui vérifie si résultat contient note réelle -->
+
+                <table class="table table-bordered"> <!-- Création tableau avec bordure-->
+                    <thead> <!-- Contient en-têtes-->
+                        <tr> <!-- Première ligne -->
+                            <th>Modèle</th> <!-- Colonne 1 en-tête -->
+                            <th>Prédiction</th> <!-- Colonne 2 en-tête -->
+                            <th>Classification</th> <!-- Colonne 3 en-tête -->
+                        </tr>
+                    </thead>
+                    <tbody> <!-- Données dynamique (résultats des modèles) -->
+                        <tr> <!-- Première ligne de données -->
+                            <td>Régression Linéaire</td> <!-- Première cellule -->
+                            <td>{{ resultat.prediction_regression }}</td> <!-- Affiche prédiction de régression linéaire avec variable dynamique -->
+                            <td class="td" style="background-color: {{ resultat.classification[0].color }};"> <!-- Utilise dynamiquement la couleur de classification approprié provenant de app.py dans fonction classification() -->
+                                {{ resultat.classification[0].classif }} <!-- Affiche la classification associée au résultat -->
+                            </td>
+                        </tr>
+                        <tr>
+                            <!-- Exactement le même principe pour KNN sur la deuxième ligne de données -->
+                            <td>KNN</td>
+                            <td>{{ resultat.prediction_knn }}</td>
+                            <td class="td" style="background-color: {{ resultat.classification[1].color }};">
+                                {{ resultat.classification[1].classif }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <!-- Exactement le même principe pour forêt aléatoire sur la troisième ligne de données -->
+                            <td>Forêt Aléatoire</td>
+                            <td>{{ resultat.prediction_foret }}</td>
+                            <td class="td" style="background-color: {{ resultat.classification[2].color }};">
+                                {{ resultat.classification[2].classif }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="graph-container"> <!-- Crée le conteneur pour le graphique correspondant -->
+                    <h1>Graphique des Prédictions</h1>
+                    <img src="data:image/png;base64,{{ resultat.graphique }}" alt="Graphique des prédictions"> <!-- Source de l'image dynamique encodée en Base64 provenant de app.py -->
+                </div>
+            {% endif %} <!-- Fin boucle qui vérifiait si résultat contient valeur -->
+        </div>
+    </div>
+</body>
+</html>

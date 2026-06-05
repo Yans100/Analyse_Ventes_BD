@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outils de recherche</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+/*
+************************************************************************************************************************
+* Contexte de ce code : FormulaireRecherche.html à pour but de construire la section de la page web qui affiche un     *
+* formulaire à l'utilisateur dans le but de préciser sa recherche. Il va pouvoir rechercher un jeu en fonction des     *
+* attributs et la logique de recherche va retourner les jeux correspondants aux critères. Ensuite, l'utilisateur va    *
+* pouvoir modifier un jeu ou le supprimer selon ses besoins.                                                           *
+************************************************************************************************************************
+*/
+
+/*
+************************************************************************************************************************
+* Contexte de la partie CSS : Cette première partie s'occupe du côté esthétique du formulaire, en format CSS.          *
+* Fond d'écran, couleurs, apparences des questions et espaces réponses, les conteneurs, etc. sont définis.             *                                                                                                 *
+************************************************************************************************************************
+*/
+
+        body {
+            background-image: url('https://preview.redd.it/hyped-for-detective-pikachu-today-v0-n6xknez8nksb1.png?width=1080&crop=smart&auto=webp&s=db97139668cbe59ef07d34be489c158124b2c583'); /* Fond écran */
+            background-size: cover;  /* Pour que l'image de fond couvre toute la zone */
+            background-position: center;  /* Centrer l'image de fond d'écran */
+            background-attachment: fixed;  /* L'image de fond reste fixe pendant le défilement de la page */
+        }
+
+        /* Style pour la zone principale du formulaire */
+        .container {
+            background-color: rgba(255, 255, 255, 0.8);  /* Fond blanc semi-transparent */
+            padding: 20px;  /* Espacement interne pour ne pas que le contenu touche les bords du contenant */
+            border-radius: 10px; /* Coins ronds */
+            margin-top: 30px;  /* Espace au dessus */
+        }
+
+        /* Personnalisation des étiquettes de formulaire */
+        .form-group label {
+            font-weight: bold; /* Texte des étiquettes en gras */
+        }
+
+        /* Personnalisation des champs de formulaire (l'espace réponse) */
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.8); /* Fond blanc semi-transparent */
+            border: 1px solid #ddd; /* Bordure grise aux champs */
+            color: #000000; /* Texte noir */
+        }
+
+        /* Style pour le bouton soumettre */
+        .bouton-soumettre-primary {
+            background-color: #8bcf91; /* Fond vert pâle */
+        }
+
+        /* Style pour le bouton soumettre au survol du curseur */
+        .bouton-soumettre-primary:hover {
+            background-color: #6fa76a; /* Fond vert */
+            border-color: #01930d; /* Bordure verte foncé */
+        }
+
+        /* Style pour séparer visuellement les sections genre et plateforme car choix de réponses et pas un espace texte */
+        .genre-section, .plateforme-section {
+            background-color: rgba(255, 255, 255, 0.9); /* Fond blanc semi-transparent plus foncé */
+            padding: 10px;  /* Espacement interne pour ne pas que le contenu touche les bords du contenant */
+            border-radius: 10px; /* Coins ronds */
+            margin-bottom: 15px;  /* Espace entre les 2 sections */
+            border: 1px solid #286eda; /* Légère bordure bleu autours de chaque section */
+        }
+
+        /* Style pour les éléments dans chaque section */
+        .genre-section div, .plateforme-section div {
+            display: flex; /* Organise les éléments en ligne */
+            justify-content: space-between; /* Sépare les éléments horizontalement avec un espace égale */
+            align-items: center; /* Aligne verticalement les éléments au centre de la ligne */
+            margin-bottom: 10px; /* Ajoute un espace sous chaque éléments dans la section */
+        }
+
+        /* Style pour les étiquettes (titres) des sections */
+        .genre-section div label, .plateforme-section div label {
+            flex-grow: 5; /* Titre plus étendue que les éléments */
+            font-weight: bolder ; /* Texte des étiquettes plus gros */
+            padding-left: 10px; /* Espacement intérieur gauche */
+        }
+
+        /* Style pour les choix de réponses des sections */
+        .genre-section div input, .plateforme-section div input {
+            margin-left: 10px; /* Espacement de gauche pour les cases à cocher */
+        }
+    </style>
+</head>
+<body>
+
+<!--
+------------------------------------------------------------------------------------------------------------------------
+- Contexte de la partie structure : Cette deuxième partie s'occupe de l'interface du formulaire, c'est-à-dire ce qu'on -
+- met à l'intérieur, les choix de réponses, etc. Cela laisse à l'utilisateur insérer ses choix, tous les critères étant-
+- de base facultatif. Un utilisateur qui clique sur soumettre sans rien sélectionner va avoir la liste complète de jeu -
+- qui va s'afficher. Le fait de cliquer sur le bouton soumettre transfère l'utilisateur à la page                      -
+- ResutatsRecherche.html.                                                                                              -
+------------------------------------------------------------------------------------------------------------------------
+ -->
+
+    <div class="container my-5"> <!-- Classe du BootStrap qui limite largeur contenue et ajoute marge verticale en haut et en bas (my-5) -->
+        <h1 class="text-center mb-4">Outils de recherche</h1> <!-- Classe du BootStrap qui centre le texte et ajoute marge inférieur (mb-4) -->
+        <form method="POST"> <!-- Début formulaire. POST = Donner vont être envoyé -->
+            <div class="form-group"> <!-- Mise en forme des champs dans le BootStrap -->
+                <label for="title">Titre du Jeu</label> <!-- Titre de la question qui est relié à l'attribut title (nom du jeu) -->
+                <!-- input = ce qui est entendue est de type texte, name = nom du champs, class = applique le style, placeholder = en placebo -->
+                <input type="text" id="title" name="title" class="form-control" placeholder="Peu importe">
+            </div>
+
+             <!-- Exactement le même principe pour tous les autres attributs -->
+            <div class="form-group">
+                <label for="year">Année de sortie</label>
+                <input type="text" id="year" name="year" class="form-control" placeholder="Peu importe">
+            </div>
+             <div class="form-group">
+                <label for="publisher">Éditeur</label>
+                <input type="text" id="publisher" name="publisher" class="form-control" placeholder="Peu importe">
+            </div>
+            <div class="form-group">
+                <label for="review">Note Minimale</label>
+                <input type="number" step="0.1" id="review" name="review" class="form-control" placeholder="Peu importe">
+            </div>
+
+            <!-- Section pour le genre. Le type = checkbox, donc choix de cocher tous les éléments souhaités. Tout les genres sont listés. -->
+            <div class="form-group genre-section"> <!-- Mise en forme des champs dans le BootStrap -->
+                <label for="genre">Genre (Facultatif)</label> <!-- Titre de la question qui est relié à l'attribut genre -->
+                <div>
+                    <input type="checkbox" id="genre1" name="genre" value="Action"> <!-- Première option de genre (id) se référant à genre (name) avec valeur = action. -->
+                    <label for="genre1">Action</label> <!-- Titre de l'option 1 (label) relié au genre (for) -->
+                </div>
+
+                <!-- Le principe reste exactement le même pour les 10 autres options de genre -->
+                <div>
+                    <input type="checkbox" id="genre2" name="genre" value="Adventure">
+                    <label for="genre2">Aventure</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="genre3" name="genre" value="Role-Playing">
+                    <label for="genre3">RPG</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="genre4" name="genre" value="Sports">
+                    <label for="genre4">Sports</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="genre5" name="genre" value="Shooter">
+                    <label for="genre5">FPS</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="genre6" name="genre" value="Puzzle">
+                    <label for="genre6">Casse-Tête</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="genre7" name="genre" value="Racing">
+                    <label for="genre7">Course automobile</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="genre8" name="genre" value="Platform">
+                    <label for="genre8">Plateforme</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="genre9" name="genre" value="Simulation">
+                    <label for="genre9">Simulation</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="genre10" name="genre" value="Fighting">
+                    <label for="genre10">Combat</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="genre11" name="genre" value="Misc">
+                    <label for="genre11">Autres</label>
+                </div>
+            </div>
+
+            <!-- Section pour la plateforme. Le type = checkbox, donc choix de cocher tous les éléments souhaités. Toutes les plateformes sont listés. -->
+            <div class="form-group plateforme-section"> <!-- Mise en forme des champs dans le BootStrap -->
+                <label for="platform">Plateforme (Facultatif)</label> <!-- Titre de la question qui est relié à l'attribut platform -->
+                <div>
+                    <input type="checkbox" id="platform1" name="platform" value="PC"> <!-- Première option de plateforme (id) se référant à platform (name) avec valeur = PC. -->
+                    <label for="platform1">PC</label> <!-- Titre de l'option 1 (label) relié à la platform (for) -->
+                </div>
+
+                <!-- Le principe reste exactement le même pour les 15 autres options de plateforme -->
+                <div>
+                    <input type="checkbox" id="platform2" name="platform" value="PS">
+                    <label for="platform2">PlayStation</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="platform3" name="platform" value="PS2">
+                    <label for="platform3">PlayStation 2</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="platform4" name="platform" value="PS3">
+                    <label for="platform4">PlayStation 3</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="platform5" name="platform" value="XB">
+                    <label for="platform5">Xbox</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="platform6" name="platform" value="X360">
+                    <label for="platform6">Xbox 360</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="platform7" name="platform" value="GB">
+                    <label for="platform7">GameBoy</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="platform8" name="platform" value="GBA">
+                    <label for="platform8">GameBoy Advance Color</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="platform9" name="platform" value="PSP">
+                    <label for="platform9">PlayStation Portable</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="platform10" name="platform" value="DS">
+                    <label for="platform10">Nintendo DS</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="platform11" name="platform" value="3DS">
+                    <label for="platform11">Nintendo 3DS</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="platform12" name="platform" value="NES">
+                    <label for="platform12">Nintendo Entertainment System</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="platform13" name="platform" value="SNES">
+                    <label for="platform13">Super Nintendo Entertainment System</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="platform14" name="platform" value="N64">
+                    <label for="platform14">Nintendo 64</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="platform15" name="platform" value="GC">
+                    <label for="platform15">GameCube</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="platform16" name="platform" value="Wii">
+                    <label for="platform16">Wii</label>
+                </div>
+            </div>
+            <button type="submit" class="btn bouton-soumettre-primary btn-block">Soumettre</button> <!-- Bouton soumettre les informations saisies -->
+        </form> <!-- Fin du formulaire -->
+    </div>
+</body>
+</html>

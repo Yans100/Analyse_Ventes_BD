@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualisations</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+/*
+************************************************************************************************************************
+* Contexte de ce code : Visualisations.html à pour but de construire la page web qui affiche les résultats des         *
+*  graphiques produits dans la route visualisations() dans app.py. Cette route va produire 4 graphiques, qui seront    *
+* afficher ici grâce à la mise en page                                                                                 *
+************************************************************************************************************************
+*/
+
+/*
+************************************************************************************************************************
+* Contexte de la partie CSS : Cette première partie s'occupe du côté esthétique de la page web, en format CSS.         *
+* Fond d'écran, couleurs, apparences des boutons, les conteneurs, etc. sont définis dans cette première parte.         *                                                                                                 *
+************************************************************************************************************************
+*/
+
+        body {
+            background-image: url('https://wallpapers.com/images/featured/zelda-rkp03okh2d43ik06.webp'); /* Fond écran */
+            background-size: cover; /* Toute la surface */
+            background-position: center; /* Centrer image */
+            background-attachment: fixed; /* Fond écran reste fixe */
+            height: 100vh; /* S'adapte au navigateur/différente écrans */
+            display: flex; /* Flexbox pour alignement */
+            flex-direction: column; /* Vertical (colonnes) des éléments */
+            justify-content: flex-start; /*`Éléments à partir du haut */
+            align-items: center; /* Centrage horizontal des éléments*/
+        }
+
+        /* Création du contenant pour le menu principal */
+        .container {
+            background-color: rgba(255, 255, 255, 0.8); /* Fond blanc semi-transparent */
+            padding: 30px; /* Espacement interne des options */
+            border-radius: 10px; /* Coin ronds */
+            width: 90%;  /* Largeur du container */
+            max-width: 7500px; /* Largeur maximale */
+            margin-top: 20px;  /* Espacement vers le bas à partir du top de la page */
+        }
+
+        /* Créer les boutons du menu */
+        .bouton-container {
+            display: flex; /* Flexbox pour alignement */
+            justify-content: space-between; /* Aligne boutons horizontalement avec espace égale */
+            width: 100%; /* Occupation du container par les boutons */
+            margin-top: 20px; /* Ajoute espace au dessus du container */
+        }
+
+        /* Style des boutons du menu */
+        .bouton-custom {
+            background-color: #ffffff;  /* Couleur de fond des boutons devient blanc */
+            color: black;  /* Texte noir dans boutons */
+            border-radius: 5px; /* Coin arrondis */
+            font-size: 16px; /* Taille police */
+            width: 23%;  /* Largeur des boutons pour qu'ils soient côte-à-côte et uniforme */
+            padding: 10px; /* Espacement interne des boutons */
+        }
+
+        .bouton-custom:hover {
+            background-color: #d4edda;  /* Vert pâle quand on survole option du menu avec curseur de souris */
+        }
+
+        .bouton-custom:active {
+            background-color: #008000FF;  /* Bouton à une couleur vert foncé lors du clic */
+        }
+
+        /* Style pour afficher les images de chaque graphs */
+        .graphs-container img {
+            max-width: 120%; /* Image grossis de leur taille d'origine pour mieux voir */
+            display: block; /* Centrer l'image */
+            height: auto; /* Respecter automatiquement les proportions */
+            margin-left: auto; /* Respecter automatiquement les proportions */
+            margin-right: auto; /* Respecter automatiquement les proportions */
+        }
+
+        .graphs-container {
+            width: 120%; /* Ajuste le container par rapport à la taille des images graphs */
+            max-width: 1200px; /* Largeur maximale des graphiques */
+            margin: 20px auto; /* Centrer les graphiques */
+        }
+
+        .cacher {
+            display: none; /* Cache les graphiques si aucune option sélectionner dans menu */
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!--
+------------------------------------------------------------------------------------------------------------------------
+- Contexte de la partie structure : Cette deuxième partie s'occupe dans un premier temps de relier un utilisateur      -
+- qui clic sur l'option 3 du menu principal à ici. C'est ce qui correspond à son choix. Ensuite, un second menu        -
+- lui permet de choisir le graphique de son choix. Le bon graphique est ensuite affiché en image.                      -
+------------------------------------------------------------------------------------------------------------------------
+ -->
+
+    <div class="container text-center">
+        <h1 class="mb-4">Options de visualisations des données</h1>  <!-- Se réfère a option 3 de MenuPrincipal.html -->
+
+        <!-- Sélectionner le graphique à afficher avec afficheGraph (JavaScript) selon le titre de bouton que l'utilisateur clic -->
+        <div class="bouton-container">
+            <button class="btn bouton-custom" onclick="afficheGraph('barre')">Graphique à Barres - Genre de jeux les plus vendus</button>
+            <button class="btn bouton-custom" onclick="afficheGraph('camembert')">Graphique en Camembert - Proportion des ventes par région</button>
+            <button class="btn bouton-custom" onclick="afficheGraph('heatmap')">Heatmap - Ventes globales par genre au fil des années</button>
+            <button class="btn bouton-custom" onclick="afficheGraph('horizon')">Graphique à Barres Horizontales - Titres par Éditeur</button>
+        </div>
+
+        <!-- Conteneurs pour chaque graphique. id = identifie le graphique, cacher = cache par défaut les graphs
+         et src = intégration de l'image du graphique qui est généré dans app.py dans la route visualisations -->
+        <div id="barre" class="graphs-container cacher">
+            <img src="data:image/png;base64,{{ image_base64_barre }}" alt="Graphique à Barres - Genre de jeux les plus vendus">
+        </div>
+        <div id="camembert" class="graphs-container cacher">
+            <img src="data:image/png;base64,{{ image_base64_camembert }}" alt="Graphique en Camembert - Proportion des ventes par région">
+        </div>
+        <div id="heatmap" class="graphs-container cacher">
+            <img src="data:image/png;base64,{{ image_base64_heatmap }}" alt="Heatmap - Ventes globales par genre au fil des années">
+        </div>
+        <div id="horizon" class="graphs-container cacher">
+            <img src="data:image/png;base64,{{ image_base64_horizon }}" alt="Graphique à Barres Horizontales - Titres par Éditeur">
+        </div>
+    </div>
+
+    <script>
+        // Fonction JavaScript pour afficher ou masquer les graphiques
+        function afficheGraph(graph) {
+            // Masquer tous les graphiques du container graphs par défaut.
+            const graphs = document.querySelectorAll('.graphs-container');
+            graphs.forEach(function(graph) {
+                graph.classList.add('cacher');
+            });
+
+            // Affiche uniquement le graphique sélectionné (le retire de la liste cachée)
+            const selectedGraph = document.getElementById(graph);
+            selectedGraph.classList.remove('cacher');
+        }
+    </script>
+
+</body>
+</html>
